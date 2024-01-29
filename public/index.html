@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigilantes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Vigilante Profile</h1>
+    <div id="homepage">
+        <h1>Request Vigilante profile!</h1>
+        <div id="vigilantes"></div>
+    </div>
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@15/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+    <script type="text/babel">
+
+        getInitialState: function() {
+            return ({
+                vigilantes: []
+            })
+        }
+        
+        var Vigilantes = React.createClass({
+            render: function() {
+                var vigilantes = this.state.vigilantes;
+                vigilantes = vigilantes.map((vigilante, index) => {
+                    return(
+                        <li key={index}>
+                            <span className={vigilante.obj.available}></span>
+                            <span className="name">{vigilante.obj.name}</span>
+                            <span className="crime">{vigilante.obj.crime}</span>
+                            <span className="dist">{Math.floor(vigilante.dist / 1000)}</span>
+                        </li>
+                    )
+                }),
+                return (
+                    <div id="ninja-conatiner">
+                        <form id="search" onSubmit={this.handleSubmit}>
+                            <label>Enter your co-ordinates</label>
+                            <input type="text" ref="lat" placeholder="latitude" required>
+                            <label>Enter your co-ordinates</label>
+                            <input type="text" ref="lng" placeholder="longitude" required>
+                            <input type="submit" value="find vigilantes">
+                        </form>
+                        <ul>{vigilantes}</ul>
+                    </div>
+                );
+            };
+
+            handleSubmit: function(e) {
+                e.preventDefault();
+
+                var lng = this.refs.lng.value;
+                var lat = this.refs.lat.value;
+
+                fetch('/api/vigilantes?lng=' + lng '&lat=' + lat)
+                .then((data) => {
+                    return data.JSON();
+                })
+                .then(JSON => {
+                    this.setState({
+                        vigilantes: JSON
+                    })
+                })
+
+            }
+        });
+
+        ReactDOM.render(<Vigilantes />, document.getElementById("vigilantes"))
+    </script>
+
+</body>
+</html>
